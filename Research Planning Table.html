@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<!-- saved from url=(0062)file:///C:/Users/JC/Eyespy/New%20folder/Eyespy/data-table.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Planning Table</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', monospace;
+            background: #0a0a0a;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ffff;
+            animation: float 15s infinite linear;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(15, 15, 15, 0.95);
+            border-radius: 20px;
+            box-shadow: 
+                0 0 50px rgba(0,255,255,0.2),
+                inset 0 0 50px rgba(0,255,255,0.05);
+            overflow: hidden;
+            border: 1px solid rgba(0,255,255,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ffff;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,255,0.1), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8em;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 30px #00ffff;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; }
+            to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff; }
+        }
+
+        .subtitle {
+            font-family: 'Rajdhani', monospace;
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: rgba(0,255,255,0.7);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0;
+            background: #0f0f0f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+        }
+
+        th {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #00ffff;
+            padding: 25px 15px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9em;
+            border: 1px solid rgba(0,255,255,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-shadow: 0 0 10px #00ffff;
+            position: relative;
+        }
+
+        th::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: lineMove 2s ease-in-out infinite;
+        }
+
+        @keyframes lineMove {
+            0%, 100% { transform: scaleX(0); }
+            50% { transform: scaleX(1); }
+        }
+
+        td {
+            padding: 25px 15px;
+            border: 1px solid rgba(0,255,255,0.1);
+            vertical-align: top;
+            min-height: 100px;
+            position: relative;
+            background: rgba(15, 15, 15, 0.8);
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(26, 26, 46, 0.3);
+        }
+
+        tr:hover td {
+            background: rgba(0, 255, 255, 0.05);
+            box-shadow: inset 0 0 20px rgba(0,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .editable {
+            min-height: 80px;
+            padding: 15px;
+            border: 2px dashed rgba(0,255,255,0.3);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.6);
+            cursor: text;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #e0e0e0;
+            font-family: 'Rajdhani', monospace;
+            position: relative;
+        }
+
+        .editable:hover {
+            border-color: #00ffff;
+            background: rgba(0,0,0,0.8);
+            box-shadow: 
+                0 0 20px rgba(0,255,255,0.2),
+                inset 0 0 20px rgba(0,255,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .editable:focus {
+            outline: none;
+            border-color: #00ffff;
+            border-style: solid;
+            background: rgba(0,0,0,0.9);
+            box-shadow: 
+                0 0 30px rgba(0,255,255,0.4),
+                inset 0 0 30px rgba(0,255,255,0.1);
+            color: #00ffff;
+            text-shadow: 0 0 5px rgba(0,255,255,0.5);
+        }
+
+        .editable:empty:before {
+            content: ">>> INJECT DATA <<<";
+            color: rgba(0,255,255,0.4);
+            font-style: italic;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+        }
+
+        .row-number {
+            background: linear-gradient(135deg, #ff006e 0%, #8338ec 100%);
+            color: white;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            text-align: center;
+            width: 80px;
+            font-size: 1.2em;
+            text-shadow: 0 0 10px rgba(255,0,110,0.8);
+            position: relative;
+        }
+
+        .row-number::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(255,0,110,0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .add-row-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ffff;
+            border: 2px solid rgba(0,255,255,0.3);
+            font-size: 18px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-row-btn:hover {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%);
+            border-color: #00ffff;
+            box-shadow: 
+                0 0 30px rgba(0,255,255,0.3),
+                inset 0 0 30px rgba(0,255,255,0.1);
+            transform: translateY(-3px);
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .add-row-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-row-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Holographic effects */
+        .hologram {
+            position: relative;
+        }
+
+        .hologram::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                transparent 30%, 
+                rgba(0,255,255,0.1) 50%, 
+                transparent 70%
+            );
+            pointer-events: none;
+            animation: holographicShift 4s ease-in-out infinite;
+        }
+
+        @keyframes holographicShift {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            th, td {
+                padding: 15px 10px;
+                font-size: 0.9em;
+            }
+            
+            h1 {
+                font-size: 2em;
+                letter-spacing: 2px;
+            }
+            
+            .header {
+                padding: 25px;
+            }
+            
+            .row-number {
+                width: 60px;
+                font-size: 1em;
+            }
+        }
+
+        /* Circuit lines decoration */
+        .circuit-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            opacity: 0.3;
+            animation: circuitFlow 3s ease-in-out infinite;
+        }
+
+        @keyframes circuitFlow {
+            0%, 100% { width: 0; }
+            50% { width: 100%; }
+        }
+    </style>
+<style>
+            @keyframes glitch {
+                0% { transform: translate(0); }
+                20% { transform: translate(-2px, 2px); }
+                40% { transform: translate(-2px, -2px); }
+                60% { transform: translate(2px, 2px); }
+                80% { transform: translate(2px, -2px); }
+                100% { transform: translate(0); }
+            }
+        </style></head>
+<body>
+    <!-- Floating particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 6s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 8s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 10s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 12s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 14s;"></div>
+
+    <div class="container hologram">
+        <div class="header">
+            <h1>EyeSpy+ </h1>
+            <div class="subtitle">Research Methods Matrix</div>
+        </div>
+        
+        <div class="table-container">
+            <table id="researchTable">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">NODE</th>
+                        <th style="width: 20%;">Research Problem</th>
+                        <th style="width: 20%;">Testable Hypothesis</th>
+                        <th style="width: 20%;">Method for Testing</th>
+                        <th style="width: 20%;">Planned Analyses</th>
+                        <th style="width: 20%;">Expected Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="row-number">01</td>
+                        <td><div class="editable" contenteditable="true" style="">Can the application detect and report an incident faster than a standard security monitoring system?&nbsp;&nbsp;</div></td>
+                        <td><div class="editable" contenteditable="true" style="">EyeSpy+ reduces the amount of time it takes to report an incident by detecting firearms in plain sight and sending actionable notifications to stakeholders.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">Incident simulations will be conducted in an open environment with modified nerf blasters and multiple participants that cause positive firearm detections in the application.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">We will record the event (video) and incident response times from beginning to end. Then perform a case study of the metrics collected.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">We expect the application to detect the mock firearms before the attacker is able to harm the other participants. Notifications should be received by the security team that enables them to send a text reply to escalate the alarm to a simulated law enforcement dispatcher.</div></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">02</td>
+                        <td><div class="editable" contenteditable="true" style="">Can the application recognize the intended signal for help gesture?</div></td>
+                        <td><div class="editable" contenteditable="true" style="">EyeSpy+ is able to create a security notification alert based on a pre-defined gesture.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">Incident simulations will be conducted in multiple lighting conditions to test the capabilities of our gesture recognition feature.&nbsp;</div></td>
+                        <td><div class="editable" contenteditable="true" style="">We will record the event (video) and incident response times from beginning to end. Then perform a case study of the metrics collected.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">We expect the application to function as intended and distribute the system alert in the same manner as Node 1.&nbsp;</div></td>
+                    </tr>
+                    <tr>
+                        <td class="row-number">03</td>
+                        <td><div class="editable" contenteditable="true" style="">Can the application handle multiple camera sources?</div></td>
+                        <td><div class="editable" contenteditable="true" style="">EyeSpy+ is able to successfully perform real-time object detections and gesture recognition tasks while multiple camera feeds are being monitored.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">Incident simulations will be conducted in an open environment with modified nerf blasters and multiple participants that cause positive firearm detections in the application. We will add as many camera feeds as possible to stress test the application and hardware limits. We will also test with a single video source that contains a security camera systems matrix view, (multiple cameras as a single source) to evaluate detections on this type of video source.</div></td>
+                        <td><div class="editable" contenteditable="true" style="">We will record video of the applications performance and host system metrics to determine the limits of its capability as a desktop application.&nbsp;</div></td>
+                        <td><div class="editable" contenteditable="true" style="">We expect there to be a necessary trade off in frames per second as additional sources are added. We expect the single video source security camera systems matrix to miss detections and detect with lower confidence scores.</div></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="add-row-btn" onclick="addRow()">+ Initialize New Research Node</button>
+        </div>
+    </div>
+
+    <script>
+        function addRow() {
+            const table = document.getElementById('researchTable').getElementsByTagName('tbody')[0];
+            const rowCount = table.rows.length + 1;
+            const newRow = table.insertRow();
+            
+            const paddedNumber = rowCount.toString().padStart(2, '0');
+            
+            newRow.innerHTML = `
+                <td class="row-number">${paddedNumber}</td>
+                <td><div class="editable" contenteditable="true"></div></td>
+                <td><div class="editable" contenteditable="true"></div></td>
+                <td><div class="editable" contenteditable="true"></div></td>
+                <td><div class="editable" contenteditable="true"></div></td>
+                <td><div class="editable" contenteditable="true"></div></td>
+            `;
+        }
+
+        // Focus enhancement for better UX
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('editable')) {
+                e.target.focus();
+            }
+        });
+
+        // Add glitch effect on hover
+        document.querySelectorAll('.editable').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                this.style.animation = 'glitch 0.3s ease-in-out';
+            });
+            
+            element.addEventListener('animationend', function() {
+                this.style.animation = '';
+            });
+        });
+
+        // Dynamic particle generation
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = '0s';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 20000);
+        }
+
+        // Generate particles periodically
+        setInterval(createParticle, 3000);
+
+        // Add some CSS for glitch effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes glitch {
+                0% { transform: translate(0); }
+                20% { transform: translate(-2px, 2px); }
+                40% { transform: translate(-2px, -2px); }
+                60% { transform: translate(2px, 2px); }
+                80% { transform: translate(2px, -2px); }
+                100% { transform: translate(0); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+<div class="particle" style="left: 91.7401%; animation-delay: 0s; animation-duration: 13.6086s;"></div><div class="particle" style="left: 34.9058%; animation-delay: 0s; animation-duration: 16.12s;"></div><div class="particle" style="left: 2.6662%; animation-delay: 0s; animation-duration: 14.9218s;"></div><div class="particle" style="left: 34.7183%; animation-delay: 0s; animation-duration: 15.1946s;"></div><div class="particle" style="left: 2.15003%; animation-delay: 0s; animation-duration: 19.0628s;"></div><div class="particle" style="left: 0.539838%; animation-delay: 0s; animation-duration: 15.6384s;"></div></body></html>
