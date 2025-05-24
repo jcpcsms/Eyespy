@@ -1,4 +1,7 @@
 ################################################## Real Time Action Recognition, JCP FSU CSMS #######################################################################
+# Ref: https://github.com/felixchenfy/Realtime-Action-Recognition
+# Ref: https://github.com/jeffreyyihuang/two-stream-action-recognition
+# Ref: https://github.com/CMU-Perceptual-Computing-Lab/openpose/tree/master
 
 import cv2
 import numpy as np
