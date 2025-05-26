@@ -2,6 +2,7 @@
 # Ref: https://github.com/felixchenfy/Realtime-Action-Recognition
 # Ref: https://github.com/jeffreyyihuang/two-stream-action-recognition
 # Ref: https://github.com/CMU-Perceptual-Computing-Lab/openpose/tree/master
+# Ref: https://colab.research.google.com/github/googlesamples/mediapipe/blob/main/examples/pose_landmarker/python/%5BMediaPipe_Python_Tasks%5D_Pose_Landmarker.ipynb 
 
 import cv2
 import numpy as np
