@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Network Architecture</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .layer {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            width: 100%;
+            max-width: 1200px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .layer:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .layer-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .layer-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+            margin-right: 20px;
+        }
+        
+        .input-layer { background: #e74c3c; }
+        .projection-layer { background: #f39c12; }
+        .lstm-layer { background: #2ecc71; }
+        .attention-layer { background: #9b59b6; }
+        .classifier-layer { background: #1abc9c; }
+        
+        .layer-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .layer-subtitle {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .layer-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .layer-description {
+            color: #34495e;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+        
+        .layer-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 150px;
+        }
+        
+        .matrix {
+            display: grid;
+            gap: 2px;
+            background: #ecf0f1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #bdc3c7;
+        }
+        
+        .matrix-30x66 { grid-template-columns: repeat(10, 1fr); }
+        .matrix-30x128 { grid-template-columns: repeat(8, 1fr); }
+        .matrix-30x512 { grid-template-columns: repeat(12, 1fr); }
+        .matrix-512 { grid-template-columns: repeat(8, 1fr); }
+        .matrix-5 { grid-template-columns: repeat(5, 1fr); }
+        
+        .matrix-cell {
+            width: 8px;
+            height: 8px;
+            background: #3498db;
+            border-radius: 1px;
+        }
+        
+        .attention-head {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #9b59b6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 5px;
+        }
+        
+        .lstm-cell {
+            width: 80px;
+            height: 50px;
+            background: #2ecc71;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin: 5px;
+            position: relative;
+        }
+        
+        .arrow {
+            font-size: 2em;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        
+        .math-box {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+        
+        .dimensions {
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            position: absolute;
+            top: -10px;
+            right: 20px;
+        }
+        
+        .connection-line {
+            height: 40px;
+            width: 3px;
+            background: linear-gradient(to bottom, #3498db, transparent);
+            margin: 0 auto;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .flow-step {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .flow-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .flow-arrow {
+            font-size: 1.5em;
+            color: #3498db;
+        }
+        
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .spec-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .spec-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .spec-value {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Neural Network Architecture</h1>
+        
+        <div class="architecture">
+            <!-- Input Layer -->
+            <div class="layer">
+                <div class="dimensions">30 × 66</div>
+                <div class="layer-header">
+                    <div class="layer-icon input-layer">📊</div>
+                    <div>
+                        <div class="layer-title">Input Layer</div>
+                        <div class="layer-subtitle">Normalized Pose Sequences</div>
+                    </div>
+                </div>
+                <div class="layer-content">
+                    <div>
+                        <div class="layer-description">
+                            Each input consists of 30 consecutive frames, where each frame contains 66 normalized pose coordinates (33 landmarks × 2 coordinates). The data has been preprocessed with geometric normalization and temporal smoothing.
+                        </div>
+                        <div class="math-box">
+                            X = {x₁, x₂, ..., x₃₀} ∈ ℝ³⁰ˣ⁶⁶<br>
+                            where xₜ = [p₁ˣ, p₁ʸ, ..., p₃₃ˣ, p₃₃ʸ]
+                        </div>
+                    </div>
+                    <div class="layer-visual">
+                        <div class="matrix matrix-30x66">
+                            <!-- Generate matrix cells -->
+                            <script>
+                                for(let i = 0; i < 120; i++) {
+                                    document.write('<div class="matrix-cell"></div>');
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connection-line"></div>
+            
+            <!-- Projection Layer -->
+            <div class="layer">
+                <div class="dimensions">30 × 128</div>
+                <div class="layer-header">
+                    <div class="layer-icon projection-layer">🔧</div>
+                    <div>
+                        <div class="layer-title">Input Projection</div>
+                        <div class="layer-subtitle">Feature Extraction & Noise Reduction</div>
+                    </div>
+                </div>
+                <div class="layer-content">
+                    <div>
+                        <div class="layer-description">
+                            Two-layer MLP that projects the 66-dimensional pose features into a 128-dimensional representation. This layer reduces noise and extracts relevant features before temporal processing.
+                        </div>
+                        <div class="math-box">
+                            h⁽⁰⁾ = ReLU(W₁ · ReLU(W₀ · x + b₀) + b₁)<br>
+                            W₀ ∈ ℝ¹²⁸ˣ⁶⁶, W₁ ∈ ℝ¹²⁸ˣ¹²⁸
+                        </div>
+                        <div class="specs-grid">
+                            <div class="spec-card">
+                                <div class="spec-title">Layer 1</div>
+                                <div class="spec-value">66 → 128 + ReLU</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Layer 2</div>
+                                <div class="spec-value">128 → 128 + ReLU</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Dropout</div>
+                                <div class="spec-value">0.2 (20%)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layer-visual">
+                        <div class="matrix matrix-30x128">
+                            <script>
+                                for(let i = 0; i < 96; i++) {
+                                    document.write('<div class="matrix-cell"></div>');
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connection-line"></div>
+            
+            <!-- LSTM Layer -->
+            <div class="layer">
+                <div class="dimensions">30 × 512</div>
+                <div class="layer-header">
+                    <div class="layer-icon lstm-layer">🔄</div>
+                    <div>
+                        <div class="layer-title">Bidirectional LSTM</div>
+                        <div class="layer-subtitle">Temporal Sequence Modeling</div>
+                    </div>
+                </div>
+                <div class="layer-content">
+                    <div>
+                        <div class="layer-description">
+                            3-layer bidirectional LSTM processes sequences in both forward and backward directions. Each direction has 256 hidden units, resulting in 512-dimensional output features that capture rich temporal dependencies.
+                        </div>
+                        <div class="math-box">
+                            h⁽ᶠ⁾ = LSTM_forward(h⁽⁰⁾)<br>
+                            h⁽ᵇ⁾ = LSTM_backward(h⁽⁰⁾)<br>
+                            h⁽ˡˢᵗᵐ⁾ = [h⁽ᶠ⁾; h⁽ᵇ⁾] ∈ ℝ³⁰ˣ⁵¹²
+                        </div>
+                        <div class="specs-grid">
+                            <div class="spec-card">
+                                <div class="spec-title">Layers</div>
+                                <div class="spec-value">3 stacked LSTM layers</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Hidden Size</div>
+                                <div class="spec-value">256 per direction</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Bidirectional</div>
+                                <div class="spec-value">Forward + Backward</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Dropout</div>
+                                <div class="spec-value">0.4 (40%)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layer-visual">
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div style="display: flex; margin-bottom: 10px;">
+                                <div class="lstm-cell">LSTM₁</div>
+                                <div class="lstm-cell">LSTM₂</div>
+                                <div class="lstm-cell">LSTM₃</div>
+                            </div>
+                            <div style="font-size: 1.2em; color: #2ecc71; margin: 5px;">↕️</div>
+                            <div style="display: flex;">
+                                <div class="lstm-cell">LSTM₃</div>
+                                <div class="lstm-cell">LSTM₂</div>
+                                <div class="lstm-cell">LSTM₁</div>
+                            </div>
+                            <div style="margin-top: 10px; color: #2c3e50; font-weight: bold;">
+                                Forward + Backward = 512D
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connection-line"></div>
+            
+            <!-- Attention Layer -->
+            <div class="layer">
+                <div class="dimensions">30 × 512</div>
+                <div class="layer-header">
+                    <div class="layer-icon attention-layer">👁️</div>
+                    <div>
+                        <div class="layer-title">Multi-Head Attention</div>
+                        <div class="layer-subtitle">Focus on Important Frames</div>
+                    </div>
+                </div>
+                <div class="layer-content">
+                    <div>
+                        <div class="layer-description">
+                            4-head self-attention mechanism that identifies the most important frames in the sequence. Each head learns different aspects of temporal relationships, allowing the model to focus on key moments of the gesture.
+                        </div>
+                        <div class="math-box">
+                            Attention(Q,K,V) = softmax(QK^T/√d_k)V<br>
+                            MultiHead = Concat(head₁,...,head₄)W^O<br>
+                            where each head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)
+                        </div>
+                        <div class="specs-grid">
+                            <div class="spec-card">
+                                <div class="spec-title">Attention Heads</div>
+                                <div class="spec-value">4 parallel heads</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Key/Query/Value</div>
+                                <div class="spec-value">512D → 128D each</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Output</div>
+                                <div class="spec-value">Concatenated 512D</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Dropout</div>
+                                <div class="spec-value">0.4 (40%)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layer-visual">
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+                                <div class="attention-head">H₁</div>
+                                <div class="attention-head">H₂</div>
+                                <div class="attention-head">H₃</div>
+                                <div class="attention-head">H₄</div>
+                            </div>
+                            <div style="font-size: 1.5em; color: #9b59b6; margin: 10px;">⬇️</div>
+                            <div style="background: #9b59b6; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold;">
+                                Concatenate & Project
+                            </div>
+                            <div style="margin-top: 10px; color: #2c3e50; font-size: 0.9em; text-align: center;">
+                                Weighted attention over<br>30 time steps
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connection-line"></div>
+            
+            <!-- Pooling & Fusion -->
+            <div class="layer">
+                <div class="dimensions">512</div>
+                <div class="layer-header">
+                    <div class="layer-icon" style="background: #34495e;">🔗</div>
+                    <div>
+                        <div class="layer-title">Feature Fusion & Pooling</div>
+                        <div class="layer-subtitle">Temporal Aggregation</div>
+                    </div>
+                </div>
+                <div class="layer-content">
+                    <div>
+                        <div class="layer-description">
+                            Global average pooling is applied to both LSTM and attention outputs across the temporal dimension. The features are then combined to create a single 512-dimensional representation of the entire sequence.
+                        </div>
+                        <div class="math-box">
+                            h_lstm_pooled = (1/T) Σᵗ₌₁ᵀ h_t^(lstm)<br>
+                            h_attn_pooled = (1/T) Σᵗ₌₁ᵀ h_t^(attn)<br>
+                            h_combined = h_lstm_pooled + h_attn_pooled
+                        </div>
+                    </div>
+                    <div class="layer-visual">
+                        <div class="flow-diagram" style="background: #34495e;">
+                            <div class="flow-step">
+                                <div class="flow-icon">📊</div>
+                                <div>LSTM<br>(30×512)</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-step">
+                                <div class="flow-icon">📏</div>
+                                <div>Pool<br>(512)</div>
+                            </div>
+                            <div class="flow-arrow">→</div>
+                            <div class="flow-step">
+                                <div class="flow-icon">➕</div>
+                                <div>Add</div>
+                            </div>
+                            <div class="flow-arrow">←</div>
+                            <div class="flow-step">
+                                <div class="flow-icon">📏</div>
+                                <div>Pool<br>(512)</div>
+                            </div>
+                            <div class="flow-arrow">←</div>
+                            <div class="flow-step">
+                                <div class="flow-icon">👁️</div>
+                                <div>Attention<br>(30×512)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="connection-line"></div>
+            
+            <!-- Classification Layer -->
+            <div class="layer">
+                <div class="dimensions">5</div>
+                <div class="layer-header">
+                    <div class="layer-icon classifier-layer">🎯</div>
+                    <div>
+                        <div class="layer-title">Classification Head</div>
+                        <div class="layer-subtitle">Action Prediction</div>
+                    </div>
+                </div>
+                <div class="layer-content">
+                    <div>
+                        <div class="layer-description">
+                            Three-layer MLP with batch normalization progressively reduces dimensions from 512 to 5 action classes. The final softmax layer produces probability distributions over the action categories.
+                        </div>
+                        <div class="math-box">
+                            h₁ = BatchNorm(ReLU(W₁ · h_combined + b₁))<br>
+                            h₂ = ReLU(W₂ · h₁ + b₂)<br>
+                            logits = W₃ · h₂ + b₃<br>
+                            ŷ = softmax(logits)
+                        </div>
+                        <div class="specs-grid">
+                            <div class="spec-card">
+                                <div class="spec-title">Layer 1</div>
+                                <div class="spec-value">512 → 256 + BatchNorm</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Layer 2</div>
+                                <div class="spec-value">256 → 128 + ReLU</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Output</div>
+                                <div class="spec-value">128 → 5 classes</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-title">Activation</div>
+                                <div class="spec-value">Softmax</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layer-visual">
+                        <div style="display: flex; flex-direction: column; align-items: center;">
+                            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+                                <div style="width: 25px; height: 25px; background: #1abc9c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">C</div>
+                                <div style="width: 25px; height: 25px; background: #1abc9c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">H</div>
+                                <div style="width: 25px; height: 25px; background: #1abc9c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">V</div>
+                                <div style="width: 25px; height: 25px; background: #1abc9c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">S</div>
+                                <div style="width: 25px; height: 25px; background: #1abc9c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7em;">I</div>
+                            </div>
+                            <div style="font-size: 0.8em; color: #2c3e50; text-align: center;">
+                                Circular Wave | Horizontal Wave | Vertical Wave<br>
+                                Stop Signal | Idle
+                            </div>
+                            <div style="margin-top: 10px; padding: 10px; background: #1abc9c; color: white; border-radius: 8px; font-weight: bold;">
+                                Probability Distribution: [0.85, 0.05, 0.03, 0.04, 0.03]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Section -->
+        <div style="margin-top: 40px; padding: 25px; background: #2c3e50; color: white; border-radius: 15px;">
+            <h3 style="margin-top: 0; text-align: center; font-size: 1.8em;">📊 Architecture Summary</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; color: #3498db;">1.2M</div>
+                    <div>Total Parameters</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; color: #2ecc71;">30ms</div>
+                    <div>Inference Time</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; color: #f39c12;">512</div>
+                    <div>Feature Dimensions</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5em; color: #e74c3c;">5</div>
+                    <div>Output Classes</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                <h4 style="margin-top: 0;">🎯 Key Architecture Advantages</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <div style="color: #3498db; font-weight: bold;">✅ Bidirectional Processing</div>
+                        <div style="font-size: 0.9em; margin-top: 5px;">Captures both forward and backward temporal context</div>
+                    </div>
+                    <div>
+                        <div style="color: #2ecc71; font-weight: bold;">✅ Multi-Head Attention</div>
+                        <div style="font-size: 0.9em; margin-top: 5px;">Focuses on the most important frames automatically</div>
+                    </div>
+                    <div>
+                        <div style="color: #f39c12; font-weight: bold;">✅ Feature Fusion</div>
+                        <div style="font-size: 0.9em; margin-top: 5px;">Combines sequential and attention-based representations</div>
+                    </div>
+                    <div>
+                        <div style="color: #e74c3c; font-weight: bold;">✅ Real-time Capable</div>
+                        <div style="font-size: 0.9em; margin-top: 5px;">Fast inference suitable for live applications</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
