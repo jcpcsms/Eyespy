@@ -295,7 +295,7 @@ def cam_config():
         return None
 
 ####################################################################################################################################
-# Function 3. clean exit
+# clean exit
 def exit(video_capture):
     if video_capture is not None and video_capture.isOpened():
         video_capture.release()
@@ -303,7 +303,7 @@ def exit(video_capture):
     root.destroy()
 
 ####################################################################################################################################
-# Function 4. take_screenshot(including gun detection)
+#  take_screenshot(including gun detection)
 def take_screenshot():
     ret, frame = video_capture.read()
     if not ret:
@@ -334,7 +334,7 @@ def take_screenshot():
         messagebox.showerror("Screenshot Error", f"Error capturing screenshot: {str(e)}")
 
 ####################################################################################################################################
-# Function 5. nonblocking alert + play alarm sound
+# nonblocking alert + play alarm sound
 def show_nonblocking_alert(title, message):
     def show_alert():
         try:
@@ -361,7 +361,7 @@ def show_nonblocking_alert(title, message):
 gun_alert_triggered = False
 circular_wave_alert_triggered = False
 ##########################################################################################################################################
-# Function 6. process_gun_detections & triggering alert Gun detection from public dataset
+# process_gun_detections & triggering alert Gun detection from public dataset
 # Gun detection frame counter for optimization
 gun_detection_counter = 0
 
@@ -416,7 +416,7 @@ def process_gun_detections(frame):
         return frame
 
 ##########################################################################################################################################
-# Function 7. process_action_recognition - with circular wave alert
+#  process_action_recognition - with circular wave alert
 def process_action_recognition(frame):
     global circular_wave_alert_triggered
     if not action_recognizer.model_trained:
@@ -450,7 +450,7 @@ def process_action_recognition(frame):
         return frame
 
 ##########################################################################################################################################
-# Function 8. update_frame for firearm and ActRec
+# update_frame for firearm and ActRec
 def update_frame():
     try:
         ret, frame = video_capture.read()
