@@ -16,10 +16,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from collections import deque
-
 ####################################################################################################################################
 gun_model= YOLO('data/model.pt')
-
 #force YOLO to use GPU
 if torch.cuda.is_available():
     gun_model.to('cuda')
@@ -260,7 +258,8 @@ class ActionRecognition:
         return None, 0.0
 
 ####################################################################################################################################
-# Function 1. save_detection_log
+# save_detection_log 
+
 def save_detection_log(label, coordinates, detection_type):
     log_dir = "logs"
     if not os.path.exists(log_dir):
@@ -275,7 +274,7 @@ def save_detection_log(label, coordinates, detection_type):
         print(f"Error writing to log file: {str(e)}")       
 
 ####################################################################################################################################
-# Function 2. cam_config
+# cam_config
 def cam_config():
     try:
         video_capture = cv2.VideoCapture(0)
