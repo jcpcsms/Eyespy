@@ -414,24 +414,65 @@ def take_screenshot_detection_only():
     except Exception as e:
         messagebox.showerror("Screenshot Error", f"Error capturing screenshots: {str(e)}")
         return None
+    
+#screenshot with detection frames
+def take_screenshot_with_frames(detection_frames=None):
+    try:
+        #Use provided detection frames or fall back to current frames
+        if detection_frames:
+            frames_to_save = detection_frames
+            source = "detection frames"
+        else:
+            frames_to_save = camera_manager.get_all_latest_frames()
+            source = "current frames"
+        
+        if not frames_to_save:
+            messagebox.showerror("Screenshot failure", "No frames available")
+            return
+        
+        screenshot_dir = "screenshots"
+        os.makedirs(screenshot_dir, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        saved_files = []
+        
+        for camera_id, frame in frames_to_save.items():
+            filename = f"Eyespy_{camera_id}_{timestamp}.png"
+            filepath = os.path.join(screenshot_dir, filename)
+            cv2.imwrite(filepath, frame)
+            saved_files.append(filename)
+        
+        print(f"Screenshots saved from {source}: {', '.join(saved_files)}")
+        messagebox.showinfo("Eyespy+", f"Detection screenshots saved: {', '.join(saved_files)}")
+        
+        return saved_files
+        
+    except Exception as e:
+        messagebox.showerror("Screenshot Error", f"Error capturing screenshots: {str(e)}")    
 ####################################################################################################################################
 # nonblocking alert + play alarm sound
-def show_nonblocking_alert(title, message):
+def show_nonblocking_alert(title, message, detection_frames=None):
     def show_alert():
         try:
             winsound.PlaySound('Sounds\\siren.wav', winsound.SND_FILENAME | winsound.SND_ASYNC)
         except Exception as e:
             print(f"Sound error: {str(e)}")
+        
         alert_window = tk.Toplevel(root)
         alert_window.title(title)
         alert_window.geometry("300x150")
         alert_window.configure(bg="red")  
         alert_window.attributes("-topmost", True)
+        
         msg_label = tk.Label(alert_window, text=message, font=("Arial", 16), bg="red", fg="white", wraplength=280)
         msg_label.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        
         dismiss_button = tk.Button(alert_window, text="Dismiss", command=alert_window.destroy, font=("Arial", 12))
         dismiss_button.pack(pady=10)
-        take_screenshot_detection_only() 
+        
+        #Use detection frames if provided, otherwise fall back to current frames
+        take_screenshot_with_frames(detection_frames)
+        
         alert_window.after(5000, alert_window.destroy)
         
     alert_thread = threading.Thread(target=show_alert)
@@ -445,8 +486,7 @@ gun_alert_states = {
     'object_1': {'triggered': False, 'last_time': 0},
     'object_2': {'triggered': False, 'last_time': 0},
     'object_3': {'triggered': False, 'last_time': 0}
-}
-
+}    
 ##########################################################################################################################################
 #multi-camera gun detection processing
 gun_detection_counter = 0
@@ -461,7 +501,7 @@ def process_gun_detections_multi_camera(camera_frames_dict):
     
     processed_frames = {}
     current_time = time.time()
-    
+    detection_frames = {}  
     for camera_id, frame in camera_frames_dict.items():
         processed_frame = frame.copy()
         
@@ -487,13 +527,18 @@ def process_gun_detections_multi_camera(camera_frames_dict):
                                 cv2.putText(processed_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (0, 0, 255), 2)
                                 save_detection_log(label, (x1, y1, x2-x1, y2-y1), f"Weapon Detection - {camera_id}")
                                 
+                                #Store frame with detection for screenshot
+                                detection_frames[camera_id] = processed_frame.copy()
+                                
                                 # Per-camera alert logic
                                 if gun_model.names[cls_id] == 'Gun' and conf > 0.76:
                                     camera_alert_state = gun_alert_states[camera_id]
                                     
                                     if not camera_alert_state['triggered'] or (current_time - camera_alert_state['last_time']) > 10.0:
                                         print(f"FIREARM ALERT TRIGGERED on {camera_id}!")
-                                        show_nonblocking_alert("EyeSpy+ ALERT!", f"FIREARM DETECTED on {camera_id.upper()}!")
+                                        
+                                        # Pass the detection frame directly
+                                        show_nonblocking_alert("EyeSpy ALERT!", f"FIREARM DETECTED on {camera_id.upper()}!", detection_frames)
                                         screenshot_payload(bot_token="########", chat_id="######", 
                                                          title=f"FIREARM ALERT - {camera_id}", 
                                                          message=f"FIREARM DETECTED on {camera_id}!")
@@ -501,7 +546,7 @@ def process_gun_detections_multi_camera(camera_frames_dict):
                                         camera_alert_state['triggered'] = True
                                         camera_alert_state['last_time'] = current_time
                                         
-                                        # Reset alert after cooldown
+                                        #Reset alert after cooldown
                                         def reset_gun_alert_flag(cam_id):
                                             gun_alert_states[cam_id]['triggered'] = False
                                         
@@ -519,7 +564,6 @@ def process_gun_detections_multi_camera(camera_frames_dict):
         processed_frames[camera_id] = processed_frame
     
     return processed_frames
-
 #######################################################################################################################################################
 # If camera is USB, flip it horizontally for mirror display
 
