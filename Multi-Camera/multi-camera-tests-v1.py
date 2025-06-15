@@ -307,14 +307,12 @@ def cam_config():
 
 ####################################################################################################################################
 # clean exit 
-
 def exit_app():
     global camera_manager
     if camera_manager:
         camera_manager.stop_all_cameras()
     cv2.destroyAllWindows()
     root.destroy()
-
 ####################################################################################################################################
 #Screenshot of all cameras
 def take_screenshot_all_cameras():
@@ -352,7 +350,7 @@ def take_screenshot_all_cameras():
             cv2.imwrite(filepath, frame)
             saved_files.append(filename)
         
-        messagebox.showinfo("Eyespy", f"Screenshots saved: {', '.join(saved_files)}")
+        messagebox.showinfo("Eyespy+", f"Screenshots saved: {', '.join(saved_files)}")
         
     except Exception as e:
         messagebox.showerror("Screenshot Error", f"Error capturing screenshots: {str(e)}")
@@ -406,17 +404,16 @@ def take_screenshot_detection_only():
                 })
         
         if saved_files:
-            messagebox.showinfo("Eyespy", f"Detection screenshots saved: {', '.join(saved_files)}")
+            messagebox.showinfo("Eyespy+", f"Detection screenshots saved: {', '.join(saved_files)}")
             print(f"Detection info: {detection_info}")  
             return detection_info  
         else:
-            messagebox.showinfo("Eyespy", "No detections found - no screenshots saved")
+            messagebox.showinfo("Eyespy+", "No detections found - no screenshots saved")
             return None
         
     except Exception as e:
         messagebox.showerror("Screenshot Error", f"Error capturing screenshots: {str(e)}")
         return None
-
 ####################################################################################################################################
 # nonblocking alert + play alarm sound
 def show_nonblocking_alert(title, message):
@@ -496,7 +493,7 @@ def process_gun_detections_multi_camera(camera_frames_dict):
                                     
                                     if not camera_alert_state['triggered'] or (current_time - camera_alert_state['last_time']) > 10.0:
                                         print(f"FIREARM ALERT TRIGGERED on {camera_id}!")
-                                        show_nonblocking_alert("EyeSpy ALERT!", f"FIREARM DETECTED on {camera_id.upper()}!")
+                                        show_nonblocking_alert("EyeSpy+ ALERT!", f"FIREARM DETECTED on {camera_id.upper()}!")
                                         screenshot_payload(bot_token="########", chat_id="######", 
                                                          title=f"FIREARM ALERT - {camera_id}", 
                                                          message=f"FIREARM DETECTED on {camera_id}!")
@@ -523,7 +520,7 @@ def process_gun_detections_multi_camera(camera_frames_dict):
     
     return processed_frames
 
-##########################################################################################################################################
+#######################################################################################################################################################
 # If camera is USB, flip it horizontally for mirror display
 
 def should_flip_camera(actual_camera_id):
