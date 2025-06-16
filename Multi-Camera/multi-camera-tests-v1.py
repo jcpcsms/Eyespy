@@ -565,13 +565,15 @@ def process_gun_detections_multi_camera(camera_frames_dict):
     
     return processed_frames
 #######################################################################################################################################################
-# If camera is USB, flip it horizontally for mirror display
+# Flip USB Cameras for mirror effect                      
 
 def should_flip_camera(actual_camera_id):
     if actual_camera_id in camera_manager.cameras:
         camera = camera_manager.cameras[actual_camera_id]
-        return camera.source_type == 'usb'  #only flip USB cameras
+        return camera.source_type == 'usb' 
     return False
+#######################################################################################################################################################
+#Matrix view
 
 def create_display_matrix(processed_frames):
     priority_width, priority_height = 400, 300  
@@ -586,7 +588,7 @@ def create_display_matrix(processed_frames):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (100, 100, 100), 2)
 
     display_frames = {}
-
+#Process priotity cameras 
     for camera_id in ['priority_1', 'priority_2']:
         if camera_id in processed_frames:
             frame = processed_frames[camera_id]
@@ -656,23 +658,15 @@ def update_frame():
             
             root.after(100, update_frame)
             return
-        
-        # Process gun detections on all frames
+    
         processed_frames = process_gun_detections_multi_camera(all_frames)
-        
-        # Create matrix display from processed frames
         matrix_frame = create_display_matrix(processed_frames)
-        
-        #Convert matrix to display format
         cv2_img = cv2.cvtColor(matrix_frame, cv2.COLOR_BGR2RGB)
         img = Image.fromarray(cv2_img)
         imgtk = ImageTk.PhotoImage(image=img)
-
         matrix_display_label.configure(image=imgtk)
         matrix_display_label.image = imgtk 
-        
         update_camera_status()
-
         root.after(50, update_frame)  
 
     except Exception as e:
@@ -682,8 +676,6 @@ def update_frame():
 def update_camera_status():
     active_cameras = [cam_id for cam_id, cam in camera_manager.cameras.items() if cam.is_active]
     total_cameras = len(camera_manager.cameras)
-    
-    # Create detailed status
     status_parts = []
     for camera_id, camera in camera_manager.cameras.items():
         if camera.is_active:
@@ -695,10 +687,9 @@ def update_camera_status():
     status_label.config(text=status_text)
 
 ################################################################################################################################
-# notification to Telegram with latest screenshot - UNCHANGED from your original code
+# Telegram notification 
 
 def screenshot_payload(bot_token, chat_id, title, message):
-  # Use latest screenshot
   files = glob.glob("screenshots/Eyespy_capture_*.png")
   if not files:
       files = glob.glob("screenshots/Eyespy_*.png")  
@@ -718,42 +709,30 @@ def screenshot_payload(bot_token, chat_id, title, message):
             print(f"Failed: {response.text}")
       except Exception as e:
           print(f"Telegram error: {e}")
-
 ################################################################################################################################
-# CHANGE: Completely modified main window layout for matrix display
+# GUI window 
 root = tk.Tk()
 root.title("Eyespy+ Multi-Camera Matrix View (Gun Detection Testing)")
 root.geometry("1000x700") 
-
 main_frame = tk.Frame(root)
 main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-
 display_frame = tk.Frame(main_frame, relief='sunken', bd=2)
 display_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
-
 matrix_display_label = tk.Label(display_frame, 
                                 text="Multi-Camera Matrix View\n\nTop Row: Priority Cameras (Action Recognition Ready)\nBottom Row: Object Detection Cameras\n\nClick 'Start Cameras' to begin", 
                                 width=80, height=30, bg='lightgray', relief='flat',
                                 font=('Arial', 12), justify='center')
 matrix_display_label.pack(fill=tk.BOTH, expand=True)
-
-######################################################################################
-
 button_frame = tk.Frame(main_frame)
 button_frame.pack(fill=tk.X, pady=10)
-
 info_frame = tk.Frame(button_frame)
 info_frame.pack(fill=tk.X, pady=(0, 5))
-
 info_label = tk.Label(info_frame, 
                      text="Matrix Layout: Top Row = Priority Cameras (400x300) | Bottom Row = Object Cameras (266x200)",
                      font=('Arial', 9), fg='blue')
 info_label.pack()
-
-
 controls_frame = tk.Frame(button_frame)
 controls_frame.pack(fill=tk.X)
-
 screenshot_button = ttk.Button(controls_frame, text="Screenshot All Cameras", command=take_screenshot_all_cameras)
 screenshot_button.pack(side=tk.LEFT, padx=(0, 5))
 
@@ -765,22 +744,15 @@ def stop_cameras():
 
 start_cameras_button = ttk.Button(controls_frame, text="Start Cameras", command=start_cameras)
 start_cameras_button.pack(side=tk.LEFT, padx=(0, 5))
-
 stop_cameras_button = ttk.Button(controls_frame, text="Stop Cameras", command=stop_cameras)
 stop_cameras_button.pack(side=tk.LEFT, padx=(0, 5))
-
 exit_button = ttk.Button(controls_frame, text="Exit", command=exit_app)
 exit_button.pack(side=tk.RIGHT)
-
 status_frame = tk.Frame(main_frame)
 status_frame.pack(fill=tk.X, pady=(5, 0))
-
 status_label = tk.Label(status_frame, text="Ready - No cameras active", relief='sunken', anchor='w')
 status_label.pack(fill=tk.X)
-
 camera_manager = CameraManager()
-
 root.after(1000, update_frame) 
-
 root.protocol("WM_DELETE_WINDOW", exit_app)
 root.mainloop()
